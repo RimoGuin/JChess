@@ -65,14 +65,14 @@ public class TakenPiecesPanel extends JPanel {
         Collections.sort(whiteTakenPieces, new Comparator<Piece>() {
             @Override
             public int compare(Piece o1, Piece o2) {
-                return Ints.compare(o1,getPieceValue(), o2.getPieceValue());
+                return Ints.compare(o1.getPieceValue(), o2.getPieceValue());
             }
         });
 
         Collections.sort(blackTakenPieces, new Comparator<Piece>() {
             @Override
             public int compare(Piece o1, Piece o2) {
-                return Ints.compare(o1,getPieceValue(), o2.getPieceValue());
+                return Ints.compare(o1.getPieceValue(), o2.getPieceValue());
             }
         });
 

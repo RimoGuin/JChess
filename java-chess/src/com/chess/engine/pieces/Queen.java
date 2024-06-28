@@ -1,84 +1,101 @@
 package com.chess.engine.pieces;
 
 import com.chess.engine.Alliance;
-import com.chess.engine.board.Board;
-import com.chess.engine.board.BoardUtils;
-import com.chess.engine.board.Move;
-import com.chess.engine.board.Tile;
+import com.chess.engine.board.*;
 import com.google.common.collect.ImmutableList;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
-public class Queen extends Piece{
+public final class Queen extends Piece {
 
-    public final static int[] CANDIDATE_MOVE_VECTOR_COORDINATES = { -9, -8, -7, -1, 1, 7, 8 , 9 };
+    private final static int[] CANDIDATE_MOVE_COORDINATES = { -9, -8, -7, -1, 1, 7, 8, 9 };
+    private final static Map<Integer, MoveUtils.Line[]> PRECOMPUTED_CANDIDATES = computeCandidates();
 
-    public Queen(Alliance pieceAlliance,
-                 int piecePosition) {
-        super(PieceType.QUEEN ,piecePosition, pieceAlliance, true);
+    public Queen(final Alliance alliance, final int piecePosition) {
+        super(PieceType.QUEEN, piecePosition, alliance, true);
     }
 
-    public Queen(final Alliance pieceAlliance,
-                  final int piecePosition,
-                  final boolean isFirstMove) {
-        super(PieceType.QUEEN ,piecePosition, pieceAlliance, isFirstMove);
+    public Queen(final Alliance alliance,
+                 final int piecePosition,
+                 final boolean isFirstMove) {
+        super(PieceType.QUEEN, piecePosition, alliance, isFirstMove);
     }
+
+    private static Map<Integer, MoveUtils.Line[]> computeCandidates() {
+        final Map<Integer, MoveUtils.Line[]> candidates = new HashMap<>();
+        for (int position = 0; position < BoardUtils.NUM_TILES; position++) {
+            List<MoveUtils.Line> lines = new ArrayList<>();
+            for (int offset : CANDIDATE_MOVE_COORDINATES) {
+                int destination = position;
+                MoveUtils.Line line = new MoveUtils.Line();
+                while (BoardUtils.isValidTileCoordinate(destination)) {
+                    if (isFirstColumnExclusion(destination, offset) ||
+                            isEightColumnExclusion(destination, offset)) {
+                        break;
+                    }
+                    destination += offset;
+                    if (BoardUtils.isValidTileCoordinate(destination)) {
+                        line.addCoordinate(destination);
+                    }
+                }
+                if (!line.isEmpty()) {
+                    lines.add(line);
+                }
+            }
+            if (!lines.isEmpty()) {
+                candidates.put(position, lines.toArray(new MoveUtils.Line[0]));
+            }
+        }
+        return Collections.unmodifiableMap(candidates);
+    }
+
 
     @Override
     public Collection<Move> calculateLegalMoves(final Board board) {
-
         final List<Move> legalMoves = new ArrayList<>();
-
-        for(final int candidateCoordinateOffset: CANDIDATE_MOVE_VECTOR_COORDINATES) {
-            int candidateDestinationCoordinate = this.piecePosition;
-            while(BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
-
-                if(isFirstColumnExclusion(candidateDestinationCoordinate, candidateCoordinateOffset) ||
-                        isEightColumnExclusion(candidateDestinationCoordinate, candidateCoordinateOffset)) {
-                    break;
-                }
-
-                candidateDestinationCoordinate += candidateCoordinateOffset;
-                if(BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
-                    final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
-
-                    if(!candidateDestinationTile.isTileOccupied()) {
-                        legalMoves.add(new Move.MajorMove(board, this, candidateDestinationCoordinate));
-                    } else {
-                        final Piece pieceAtDestination = candidateDestinationTile.getPiece();
-                        final Alliance pieceAlliance = pieceAtDestination.getPieceAlliance();
-
-                        if (this.pieceAlliance != pieceAlliance) {
-                            legalMoves.add(new Move.AttackMove(board, this, candidateDestinationCoordinate,
-                                    pieceAtDestination));
-                        }
-                        break;
+        for (final MoveUtils.Line line : PRECOMPUTED_CANDIDATES.get(this.piecePosition)) {
+            for (final int candidateDestinationCoordinate : line.getLineCoordinates()) {
+                final Piece pieceAtDestination = board.getPiece(candidateDestinationCoordinate);
+                if (pieceAtDestination == null) {
+                    legalMoves.add(new Move.MajorMove(board, this, candidateDestinationCoordinate));
+                } else {
+                    final Alliance pieceAlliance = pieceAtDestination.getPieceAlliance();
+                    if (this.pieceAlliance != pieceAlliance) {
+                        legalMoves.add(new Move.MajorAttackMove(board, this, candidateDestinationCoordinate,
+                                pieceAtDestination));
                     }
+                    break;
                 }
             }
         }
-        return ImmutableList.copyOf(legalMoves);
+        return Collections.unmodifiableList(legalMoves);
+    }
+
+    @Override
+    public int locationBonus() {
+        return this.pieceAlliance.queenBonus(this.piecePosition);
     }
 
     @Override
     public Queen movePiece(final Move move) {
-        return new Queen(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+        return PieceUtils.INSTANCE.getMovedQueen(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
     }
 
     @Override
     public String toString() {
-        return PieceType.QUEEN.toString();
+        return this.pieceType.toString();
     }
 
-    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -9 || candidateOffset == 7
-                                                                || candidateOffset == -1);
+    private static boolean isFirstColumnExclusion(final int position,
+                                                  final int offset) {
+        return BoardUtils.INSTANCE.FIRST_COLUMN.get(position) && ((offset == -9)
+                || (offset == -1) || (offset == 7));
     }
 
-    private static boolean isEightColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == 9 || candidateOffset == -7
-                                                                || candidateOffset == 1);
+    private static boolean isEightColumnExclusion(final int position,
+                                                  final int offset) {
+        return BoardUtils.INSTANCE.EIGHTH_COLUMN.get(position) && ((offset == -7)
+                || (offset == 1) || (offset == 9));
     }
+
 }
