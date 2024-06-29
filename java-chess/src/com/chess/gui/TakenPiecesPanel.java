@@ -82,9 +82,9 @@ class TakenPiecesPanel extends JPanel {
 
         for (final Piece takenPiece : whiteTakenPieces) {
             try {
-                final BufferedImage image = ImageIO.read(new File("art/holywarriors/"
+                final BufferedImage image = ImageIO.read(new File("art/pieces/chesscom/"
                         + takenPiece.getPieceAlliance().toString().substring(0, 1) + "" + takenPiece.toString()
-                        + ".gif"));
+                        + ".png"));
                 final ImageIcon ic = new ImageIcon(image);
                 final JLabel imageLabel = new JLabel(new ImageIcon(ic.getImage().getScaledInstance(
                         ic.getIconWidth() - 15, ic.getIconWidth() - 15, Image.SCALE_SMOOTH)));
@@ -97,9 +97,9 @@ class TakenPiecesPanel extends JPanel {
 
         for (final Piece takenPiece : blackTakenPieces) {
             try {
-                final BufferedImage image = ImageIO.read(new File("art/holywarriors/"
+                final BufferedImage image = ImageIO.read(new File("art/pieces/chesscom/"
                         + takenPiece.getPieceAlliance().toString().substring(0, 1) + "" + takenPiece.toString()
-                        + ".gif"));
+                        + ".png"));
                 final ImageIcon ic = new ImageIcon(image);
                 final JLabel imageLabel = new JLabel(new ImageIcon(ic.getImage().getScaledInstance(
                         ic.getIconWidth() - 15, ic.getIconWidth() - 15, Image.SCALE_SMOOTH)));
