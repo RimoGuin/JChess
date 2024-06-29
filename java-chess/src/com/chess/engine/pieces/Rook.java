@@ -7,7 +7,6 @@ import com.chess.engine.board.Move;
 import com.chess.engine.board.Move.MajorAttackMove;
 import com.chess.engine.board.Move.MajorMove;
 import com.chess.engine.board.MoveUtils;
-import com.google.common.collect.ImmutableList;
 
 import java.util.*;
 

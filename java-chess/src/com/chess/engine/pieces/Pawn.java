@@ -15,8 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public final class Pawn
-        extends Piece {
+public class Pawn extends Piece {
 
     private final static int[] CANDIDATE_MOVE_COORDINATES = {8, 16, 7, 9};
 
@@ -35,6 +34,11 @@ public final class Pawn
     public int locationBonus() {
         return this.pieceAlliance.pawnBonus(this.piecePosition);
     }*/
+
+    @Override
+    public int locationBonus() {
+        return 0;
+    }
 
     @Override
     public Collection<Move> calculateLegalMoves(final Board board) {

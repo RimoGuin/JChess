@@ -2,6 +2,7 @@ package com.chess.engine.board;
 
 import com.chess.engine.pieces.King;
 import com.chess.engine.pieces.Piece;
+import com.chess.engine.player.MoveTransition;
 
 import static com.chess.engine.board.Move.MoveFactory;
 

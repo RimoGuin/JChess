@@ -1,5 +1,7 @@
 package com.chess.engine.board;
 
+import com.chess.engine.board.Move;
+
 import java.util.ArrayList;
 import java.util.List;
 

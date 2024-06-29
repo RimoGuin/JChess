@@ -11,20 +11,21 @@ import static com.chess.engine.board.Move.*;
 
 // Author : Sampriyo Guin
 
-public class Bishop extends Piece {
+public final class Bishop extends Piece {
 
-    private final static int[] CANDIDATE_MOVE_COORDINATES =  { -9, -7, 7, 9};
+    private final static int[] CANDIDATE_MOVE_COORDINATES = {-9, -7, 7, 9};
     private final static Map<Integer, MoveUtils.Line[]> PRECOMPUTED_CANDIDATES = computeCandidates();
 
-    public Bishop(Alliance pieceAlliance,
-                  int piecePosition) { // Constructor
-        super(PieceType.BISHOP ,piecePosition, pieceAlliance, true);
+
+    public Bishop(final Alliance alliance,
+                  final int piecePosition) {
+        super(PieceType.BISHOP, piecePosition, alliance, true);
     }
 
-    public Bishop(final Alliance pieceAlliance,
+    public Bishop(final Alliance alliance,
                   final int piecePosition,
                   final boolean isFirstMove) {
-        super(PieceType.BISHOP ,piecePosition, pieceAlliance, isFirstMove);
+        super(PieceType.BISHOP, piecePosition, alliance, isFirstMove);
     }
 
     private static Map<Integer, MoveUtils.Line[]> computeCandidates() {
@@ -36,7 +37,7 @@ public class Bishop extends Piece {
                 MoveUtils.Line line = new MoveUtils.Line();
                 while (BoardUtils.isValidTileCoordinate(destination)) {
                     if (isFirstColumnExclusion(destination, offset) ||
-                            isEightColumnExclusion(destination, offset)) {
+                            isEighthColumnExclusion(destination, offset)) {
                         break;
                     }
                     destination += offset;
@@ -54,6 +55,7 @@ public class Bishop extends Piece {
         }
         return Collections.unmodifiableMap(candidates);
     }
+
 
     @Override
     public Collection<Move> calculateLegalMoves(final Board board) {
@@ -73,7 +75,7 @@ public class Bishop extends Piece {
                 }
             }
         }
-        return ImmutableList.copyOf(legalMoves);
+        return Collections.unmodifiableList(legalMoves);
     }
 
     @Override
@@ -83,19 +85,24 @@ public class Bishop extends Piece {
 
     @Override
     public Bishop movePiece(final Move move) {
-        return new Bishop(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+        return PieceUtils.INSTANCE.getMovedBishop(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
     }
 
     @Override
     public String toString() {
-        return PieceType.BISHOP.toString();
+        return this.pieceType.toString();
     }
 
-    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -9 || candidateOffset == 7);
+    private static boolean isFirstColumnExclusion(final int position,
+                                                  final int offset) {
+        return (BoardUtils.INSTANCE.FIRST_COLUMN.get(position) &&
+                ((offset == -9) || (offset == 7)));
     }
 
-    private static boolean isEightColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == 9 || candidateOffset == -7);
+    private static boolean isEighthColumnExclusion(final int position,
+                                                   final int offset) {
+        return BoardUtils.INSTANCE.EIGHTH_COLUMN.get(position) &&
+                ((offset == -7) || (offset == 9));
     }
+
 }

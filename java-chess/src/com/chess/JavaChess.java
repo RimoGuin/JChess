@@ -5,11 +5,10 @@ import com.chess.gui.Table;
 
 public class JavaChess {
 
-    public static void main(String args[]) {
-        Board board = Board.createStandardBoard();
+    public static void main(String args[]) throws Exception{
 
-        System.out.println(board);
+            Table.get().show();
 
-        Table table = new Table();
+
     }
 }

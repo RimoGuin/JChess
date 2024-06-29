@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.*;
 
 // Author: Sampriyo Guin
-public final class Knight extends Piece {
+public class Knight extends Piece {
 
     private final static int[] CANDIDATE_MOVE_COORDINATES = { -17, -15, -10, -6, 6, 10, 15, 17 };
     private final static Map<Integer, int[]> PRECOMPUTED_CANDIDATES = computeCandidates();
@@ -48,6 +48,11 @@ public final class Knight extends Piece {
             candidates.put(position, Arrays.copyOf(legalOffsets, numLegalMoves));
         }
         return Collections.unmodifiableMap(candidates);
+    }
+
+    @Override
+    public int locationBonus() {
+        return 0;
     }
 
     @Override

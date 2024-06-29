@@ -5,32 +5,27 @@ import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Move;
 import com.chess.engine.board.Move.MajorMove;
-import com.chess.engine.board.Move.AttackMove;
+import com.chess.engine.board.Move.MajorAttackMove;
 import com.chess.engine.board.Tile;
 import com.google.common.collect.ImmutableList;
 
 import java.util.*;
 
-public class King extends Piece {
+public final class King extends Piece {
 
-    public final static int[] CANDIDATE_MOVE_COORDINATES = { -9, -8, -7, -1, 1, 7, 8, 9 };
+    private final static int[] CANDIDATE_MOVE_COORDINATES = { -9, -8, -7, -1, 1, 7, 8, 9 };
+
     private final static Map<Integer, int[]> PRECOMPUTED_CANDIDATES = computeCandidates();
 
-    private boolean isCastled;
-    private boolean kingSideCastleCapable;
-    private boolean queenSideCastleCapable;
+    private final boolean isCastled;
+    private final boolean kingSideCastleCapable;
+    private final boolean queenSideCastleCapable;
 
-    public King(Alliance pieceAlliance,
-                int piecePosition) {
-        super(PieceType.KING, piecePosition, pieceAlliance, true);
-    }
-
-    public King(final Alliance pieceAlliance,
+    public King(final Alliance alliance,
                 final int piecePosition,
-                final boolean isFirstMovefinal,
                 final boolean kingSideCastleCapable,
                 final boolean queenSideCastleCapable) {
-        super(PieceType.KING, piecePosition, pieceAlliance, true);
+        super(PieceType.KING, piecePosition, alliance, true);
         this.isCastled = false;
         this.kingSideCastleCapable = kingSideCastleCapable;
         this.queenSideCastleCapable = queenSideCastleCapable;
@@ -69,6 +64,8 @@ public class King extends Piece {
         }
         return Collections.unmodifiableMap(candidates);
     }
+
+
     public boolean isCastled() {
         return this.isCastled;
     }
@@ -92,7 +89,7 @@ public class King extends Piece {
             } else {
                 final Alliance pieceAtDestinationAllegiance = pieceAtDestination.getPieceAlliance();
                 if (this.pieceAlliance != pieceAtDestinationAllegiance) {
-                    legalMoves.add(new Move.MajorAttackMove(board, this, candidateDestinationCoordinate,
+                    legalMoves.add(new MajorAttackMove(board, this, candidateDestinationCoordinate,
                             pieceAtDestination));
                 }
             }
@@ -105,10 +102,10 @@ public class King extends Piece {
         return this.pieceType.toString();
     }
 
-    /*@Override
+    @Override
     public int locationBonus() {
         return this.pieceAlliance.kingBonus(this.piecePosition);
-    }*/
+    }
 
     @Override
     public King movePiece(final Move move) {

@@ -527,10 +527,10 @@ public abstract class Move {
 
     }
 
-    static class NullMove
+    public static class NullMove
             extends Move {
 
-        NullMove() {
+        public NullMove() {
             super(null, -1);
         }
 
